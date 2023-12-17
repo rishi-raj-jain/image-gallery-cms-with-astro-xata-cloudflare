@@ -20,8 +20,9 @@ const profilePhotographs = await xata.db.photographs.filter({ 'profile-slug': pr
             width={photoW}
             height={photoH}
             alt={photoName}
+            decoding="async"
             src={photoImageURL}
-            loading={_ === 0 ? 'eager' : 'lazy'}
+            loading={_ < 4 ? 'eager' : 'lazy'}
             class="transform bg-cover bg-center bg-no-repeat will-change-auto"
             style={`background-image: url(${photoImageHash}); transform: translate3d(0px, 0px, 0px);`}
           />
