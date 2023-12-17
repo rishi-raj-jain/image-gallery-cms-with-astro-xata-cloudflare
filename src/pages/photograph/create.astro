@@ -1,0 +1,112 @@
+---
+import { getXataClient } from '@/xata'
+import { createBlurHash } from '@/lib/blur'
+import Layout from '@/layouts/Layout.astro'
+import Upload from '@/components/Upload.astro'
+import { transformImage } from '@xata.io/client'
+
+const response = { form: false, message: '', created: false, redirect: null }
+
+if (Astro.request.method === 'POST') {
+  try {
+    const xata = getXataClient()
+
+    // Indicate that the request is being processed
+    response.form = true
+    response.created = true
+
+    // Get the user slug, name, and image: url, width and height from the form submissions
+    const data = await Astro.request.formData()
+    const photoSlug = data.get('slug') as string
+    const photoName = data.get('name') as string
+    const photoTagline = data.get('tagline') as string
+    const photoProfileSlug = data.get('profile-slug') as string
+    const userImage = data.get('custom_upload_photograph__uploaded_image_url') as string
+    const userImageW = data.get('custom_upload_photograph__uploaded_w') as string
+    const userImageH = data.get('custom_upload_photograph__uploaded_h') as string
+
+    // Create a blur url of the photograph
+    // using Xata Image transformations
+    const photoBlurURL = transformImage(userImage, {
+      blur: 75,
+      width: 100,
+      height: 100,
+    })
+
+    // Create a base64 hash of the blur image url
+    const photoBlurHash = await createBlurHash(photoBlurURL)
+
+    // Create the photograph record with the user's slug
+    await xata.db.photographs.create({
+      slug: photoSlug,
+      name: photoName,
+      image: userImage,
+      width: userImageW,
+      height: userImageH,
+      tagline: photoTagline,
+      imageHash: photoBlurHash,
+      'profile-slug': photoProfileSlug,
+    })
+
+    // Set the relevant message for the user
+    response.message = 'Photograph published succesfully! Redirecting you to your first photograph...'
+    response.redirect = '/' + photoProfileSlug
+  } catch (e) {
+    const tmp = e.message || e.toString()
+    if (tmp.includes('not unique')) {
+      response.message = 'The requested slug is taken, please try with another slug.'
+    }
+    response.created = false
+  }
+}
+---
+
+<Layout className="flex flex-col items-center justify-center">
+  <form method="post" autocomplete="off" class="flex w-[300px] flex-col gap-y-4 text-base leading-7">
+    {
+      response.form &&
+        (response.created ? (
+          <p class="rounded bg-green-100 px-3 py-1">{response.message}</p>
+        ) : (
+          <p class="rounded bg-red-100 px-3 py-1">{response.message}</p>
+        ))
+    }
+    <Upload selector="photograph" />
+    <input required name="name" type="text" placeholder="Name" class="rounded border px-3 py-1 text-[#9F87FF] outline-none focus:border-[#9F87FF]" />
+    <input
+      required
+      type="text"
+      name="tagline"
+      placeholder="Tagline (Shiny stars)"
+      class="rounded border px-3 py-1 text-[#9F87FF] outline-none focus:border-[#9F87FF]"
+    />
+    <input
+      required
+      name="slug"
+      type="text"
+      placeholder="Slug (e.g. my-photograph-1)"
+      class="rounded border px-3 py-1 text-[#9F87FF] outline-none focus:border-[#9F87FF]"
+    />
+    <input
+      required
+      type="text"
+      name="profile-slug"
+      placeholder="Profile Slug (e.g. rishi-raj-jain)"
+      class="rounded border px-3 py-1 text-[#9F87FF] outline-none focus:border-[#9F87FF]"
+    />
+    <button
+      type="submit"
+      class="max-w-max rounded border border-[#DE99F6]/75 px-3 py-0.5 text-[#9F87FF]/75 transition duration-200 hover:bg-[#DE99F6] hover:text-white"
+    >
+      Publish Photograph &rarr;
+    </button>
+  </form>
+</Layout>
+
+<script define:vars={{ success: response.created, location: response.redirect }}>
+  if (success) {
+    setTimeout(() => {
+      window.location.href = location
+    }, 1000)
+  }
+</script>

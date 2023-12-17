@@ -1,0 +1,49 @@
+---
+
+---
+
+<script>
+  function handleFileChange(event, attribute) {
+    const file = event.target.files[0]
+    const formData = new FormData()
+    if (file) formData.append('file', file)
+    const reader = new FileReader()
+    reader.onload = async (event) => {
+      fetch('/api/upload', {
+        method: 'POST',
+        body: formData,
+      })
+        .then((res) => res.json())
+        .then((res) => {
+          const { height: uploadedImageH, width: uploadedImageW, url } = res
+          const uploadedImageAttrH = document.getElementById(attribute + '_uploaded_h')
+          const uploadedImageAttrW = document.getElementById(attribute + '_uploaded_w')
+          const uploadedImage = document.getElementById(attribute + '_uploaded_image')
+          const uploadedImageURL = document.getElementById(attribute + '_uploaded_image_url')
+          const uploadedImageImg = document.querySelector('#' + attribute + '_uploaded_image > img')
+          uploadedImage.classList.remove('hidden')
+          uploadedImageImg.setAttribute('src', url)
+          uploadedImageImg.setAttribute('width', uploadedImageW)
+          uploadedImageImg.setAttribute('height', uploadedImageH)
+          uploadedImageAttrH.setAttribute('value', uploadedImageH)
+          uploadedImageAttrW.setAttribute('value', uploadedImageW)
+          uploadedImageURL.setAttribute('value', url)
+          if (document.getElementById(attribute + '_uploader').classList.contains('hidden')) {
+            document.getElementById(attribute + '_uploader').classList.remove('hidden')
+          } else {
+            document.getElementById(attribute + '_uploader').classList.add('hidden')
+          }
+        })
+    }
+    reader.readAsArrayBuffer(file)
+  }
+  document.querySelectorAll('[id*="custom_upload_"]').forEach((i) => {
+    const tmp = i.getAttribute('id')
+    if (tmp && tmp.endsWith('_')) {
+      const initialUploader = document.getElementById(tmp + '_initial_uploader')
+      initialUploader.addEventListener('change', (e) => {
+        handleFileChange(e, tmp)
+      })
+    }
+  })
+</script>

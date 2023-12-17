@@ -1,0 +1,6 @@
+{
+  "databaseURL": "https://Rishi-Raj-Jain-s-workspace-80514q.ap-southeast-2.xata.sh/db/image-gallery-cms-with-xata-astro-cloudflare",
+  "codegen": {
+    "output": "src/xata.ts"
+  }
+}

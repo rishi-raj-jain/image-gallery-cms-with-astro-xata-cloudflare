@@ -1,0 +1,32 @@
+---
+import { getXataClient } from '@/xata'
+import Layout from '@/layouts/Layout.astro'
+
+// Get the profile slug from url path
+const { profile } = Astro.params
+
+const xata = getXataClient()
+
+// Get all the photographs related to the profile
+const profilePhotographs = await xata.db.photographs.filter({ 'profile-slug': profile }).getAll()
+---
+
+<Layout className="flex flex-col">
+  <div class="columns-1 gap-0 md:columns-2 lg:columns-3">
+    {
+      profilePhotographs.map(
+        ({ width: photoW, height: photoH, name: photoName, image: photoImageURL, tagline: photoTagline, imageHash: photoImageHash }, _) => (
+          <img
+            width={photoW}
+            height={photoH}
+            alt={photoName}
+            src={photoImageURL}
+            loading={_ === 0 ? 'eager' : 'lazy'}
+            class="transform bg-cover bg-center bg-no-repeat will-change-auto"
+            style={`background-image: url(${photoImageHash}); transform: translate3d(0px, 0px, 0px);`}
+          />
+        ),
+      )
+    }
+  </div>
+</Layout>

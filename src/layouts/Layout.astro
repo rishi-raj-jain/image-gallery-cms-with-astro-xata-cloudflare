@@ -1,0 +1,20 @@
+---
+import { ViewTransitions } from 'astro:transitions'
+import UploadHandler from '@/components/UploadHandler.astro'
+
+const { className } = Astro.props
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <ViewTransitions />
+    <meta charset="UTF-8" />
+    <title>Document</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  </head>
+  <body class={['min-w-screen min-h-screen', className].filter((i) => i).join(' ')}>
+    <slot />
+    <UploadHandler />
+  </body>
+</html>

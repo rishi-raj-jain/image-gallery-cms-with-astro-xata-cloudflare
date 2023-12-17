@@ -1,0 +1,30 @@
+{
+  "name": "image-gallery-cms-with-astro-xata-cloudflare",
+  "scripts": {
+    "astro": "astro",
+    "dev": "astro dev",
+    "start": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "fmt": "prettier --write '**/*' --ignore-unknown"
+  },
+  "dependencies": {
+    "@astrojs/node": "latest",
+    "@astrojs/tailwind": "latest",
+    "@upstash/redis": "^1.22.0",
+    "@xata.io/client": "^0.28.1",
+    "astro": "latest",
+    "date-fns": "^2.30.0",
+    "dotenv": "^16.3.1",
+    "firebase": "^10.5.0",
+    "github-slugger": "^2.0.0",
+    "tailwindcss": "^3.3.3",
+    "uuid": "^9.0.1"
+  },
+  "devDependencies": {
+    "@astrojs/cloudflare": "^8.0.0",
+    "prettier": "latest",
+    "prettier-plugin-astro": "latest",
+    "prettier-plugin-tailwindcss": "latest"
+  }
+}
