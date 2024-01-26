@@ -16,10 +16,11 @@ const { className } = Astro.props
     <AstroFont
       config={[
         {
-          fallback: 'sans-serif',
+          preload: false,
           display: 'swap',
-          selector: 'body',
           name: 'Archivo',
+          selector: 'body',
+          fallback: 'sans-serif',
           src: [
             {
               weight: 400,

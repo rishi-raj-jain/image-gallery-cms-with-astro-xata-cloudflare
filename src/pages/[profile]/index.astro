@@ -9,6 +9,8 @@ const xata = getXataClient()
 
 // Get all the photographs related to the profile
 const profilePhotographs = await xata.db.photographs.filter({ 'profile-slug': profile }).getAll()
+
+Astro.response.headers.set('CDN-Cache-Control', 'max-age=3600')
 ---
 
 <Layout className="flex flex-col">
